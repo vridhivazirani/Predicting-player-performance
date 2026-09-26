@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlayerForm AI — Slump & Transfer Intelligence</title>
+  <meta name="description" content="Live player form slump detection and transfer market overvaluation — multimodal ML intelligence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══ CUSTOM LOADING SCREEN (Ultra-Cute Chibi Messi Kicking Ball Along Bar) ═══ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-logo">
+      <span class="brand-name">PlayerForm<span class="brand-orange">AI</span></span>
+    </div>
+
+    <!-- The Track Stage: Chibi Messi running & kicking ball along the progress bar -->
+    <div class="cute-runner-stage">
+      <!-- The Character + Ball group that moves across 0% to 100% -->
+      <div class="chibi-runner-group" id="chibiRunnerGroup">
+        <!-- Running Dust Puffs behind golden cleats -->
+        <div class="chibi-dust">
+          <span class="dust-circle d1"></span>
+          <span class="dust-circle d2"></span>
+          <span class="dust-circle d3"></span>
+          <span class="dust-circle d4"></span>
+        </div>
+
+        <!-- Ultra-Cute Chibi Messi SVG -->
+        <svg class="chibi-svg" id="chibiSvg" viewBox="0 0 88 96" width="76" height="84" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sparkles & Action Stars above head -->
+          <g class="chibi-sparkles">
+            <path d="M 44 2 L 45.5 5.5 L 49 7 L 45.5 8.5 L 44 12 L 42.5 8.5 L 39 7 L 42.5 5.5 Z" fill="#ffd700" />
+            <circle cx="58" cy="7" r="1.8" fill="#75aadb" />
+            <circle cx="28" cy="5" r="1.5" fill="#f5ba13" />
+          </g>
+
+          <!-- Celebration Burst Stars (Popping on Goal!) -->
+          <g class="chibi-celebrate-stars" id="chibiCelebrateStars">
+            <path d="M 12 12 L 14 16 L 18 17 L 14 19 L 13 23 L 11 19 L 7 18 L 11 16 Z" fill="#ffd700" />
+            <path d="M 74 10 L 76 14 L 80 15 L 76 17 L 75 21 L 73 17 L 69 16 L 73 14 Z" fill="#75aadb" />
+            <circle cx="22" cy="6" r="2.5" fill="#ff6600" />
+            <circle cx="68" cy="4" r="2.5" fill="#ffd700" />
+          </g>
+
+          <!-- Back Arm (pumping) -->
+          <g class="chibi-arm-back">
+            <path d="M 36 46 L 21 54 L 17 51" stroke="#ffdfcc" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="17" cy="51" r="3.5" fill="#ffdfcc" />
+          </g>
+
+          <!-- Back Leg (Running swing) -->
+          <g class="chibi-leg-back">
+            <path d="M 33 65 L 24 81 L 16 82" stroke="#ffdfcc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+            <!-- White sock with sky-blue stripe -->
+            <rect x="18" y="76" width="7" height="4" rx="2" fill="#ffffff" transform="rotate(-15 18 76)" />
+            <line x1="19" y1="78" x2="25" y2="78" stroke="#75aadb" stroke-width="1.3" />
+            <!-- Golden Cleat (Messi signature golden boots) -->
+            <ellipse cx="19" cy="84" rx="6.8" ry="4" fill="#f5ba13" />
+            <!-- 3 dark stripes on boot -->
+            <path d="M 17 83 L 19 86 M 19 83 L 21 86 M 21 83 L 23 86" stroke="#1c2833" stroke-width="0.9" />
+          </g>
+
+          <!-- Torso / Argentina Albiceleste #10 Jersey -->
+          <g class="chibi-torso">
+            <!-- White jersey base -->
+            <rect x="28" y="42" width="28" height="26" rx="7" fill="#ffffff" />
+            <!-- Iconic Sky-Blue Vertical Stripes -->
+            <rect x="31" y="42" width="5.5" height="26" fill="#75aadb" />
+            <rect x="42" y="42" width="5.5" height="26" fill="#75aadb" />
+            <rect x="52" y="42" width="4" height="26" rx="2" fill="#75aadb" />
+            <!-- Dark Navy collar trim -->
+            <path d="M 36 42 L 42 46 L 48 42" stroke="#1c2833" stroke-width="3" stroke-linecap="round" fill="none" />
+            <!-- Gold #10 with crisp contrast -->
+            <text x="42" y="58" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" fill="#1c2833" text-anchor="middle">10</text>
+            <text x="42" y="58" font-family="'Inter', -apple-system, sans-serif" font-size="10.5" font-weight="900" fill="#f5ba13" text-anchor="middle">10</text>
+            <!-- Dark Navy Shorts -->
+            <path d="M 28 62 L 56 62 L 54 72 L 43 72 L 42 68 L 41 72 L 30 72 Z" fill="#1c2833" />
+            <!-- White side stripe on shorts -->
+            <line x1="30" y1="63" x2="31" y2="71" stroke="#ffffff" stroke-width="1.2" />
+            <line x1="54" y1="63" x2="53" y2="71" stroke="#ffffff" stroke-width="1.2" />
+          </g>
+
+          <!-- Front Leg (Kicking cycle — Messi's magical Left Foot!) -->
+          <g class="chibi-leg-front">
+            <path d="M 48 65 L 56 80 L 65 80" stroke="#ffdfcc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+            <!-- White sock with sky-blue stripe -->
+            <rect x="53" y="75" width="7" height="4" rx="2" fill="#ffffff" transform="rotate(10 53 75)" />
+            <line x1="54" y1="77" x2="60" y2="77" stroke="#75aadb" stroke-width="1.3" />
+            <!-- Golden Cleat (Messi's signature Adidas Golden Boot) -->
+            <ellipse cx="64" cy="81" rx="7.5" ry="4.3" fill="#f5ba13" />
+            <ellipse cx="64" cy="81" rx="5.5" ry="2.3" fill="#ffd700" />
+            <!-- 3 dark stripes on boot -->
+            <path d="M 62 80 L 64 83 M 64 80 L 66 83 M 66 80 L 68 83" stroke="#1c2833" stroke-width="1" />
+          </g>
+
+          <!-- Front Arm with Yellow Captain Armband (C) -->
+          <g class="chibi-arm-front">
+            <path d="M 46 46 L 59 54 L 66 50" stroke="#ffdfcc" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="66" cy="50" r="3.5" fill="#ffdfcc" />
+            <!-- Captain's Armband -->
+            <rect x="51" y="47" width="7.5" height="5" rx="1.5" fill="#ffd700" transform="rotate(25 51 47)" />
+            <text x="56" y="52" font-family="'Inter', sans-serif" font-size="3.8" font-weight="900" fill="#1c2833" text-anchor="middle" transform="rotate(25 56 52)">C</text>
+          </g>
+
+          <!-- Head & Ultra-Cute Chibi Messi Face -->
+          <g class="chibi-head">
+            <!-- Ears -->
+            <circle cx="21" cy="27" r="4.5" fill="#ffdfcc" />
+            <circle cx="21" cy="27" r="2.5" fill="#f5ba9e" />
+            <circle cx="63" cy="27" r="4.5" fill="#ffdfcc" />
+            <circle cx="63" cy="27" r="2.5" fill="#f5ba9e" />
+
+            <!-- Chubby round face -->
+            <circle cx="42" cy="26" r="21.5" fill="#ffdfcc" />
+
+            <!-- Messi's Iconic Trimmed Reddish-Brown Beard & Stubble -->
+            <path class="chibi-beard" d="M 23 27 C 23 38, 30 44, 42 44 C 54 44, 61 38, 61 27 C 61 32, 57 41, 42 41 C 27 41, 23 32, 23 27 Z" fill="#6d452e" />
+            <!-- Neat trimmed mustache -->
+            <path d="M 35 30 Q 42 28 49 30 Q 42 32 35 30 Z" fill="#6d452e" />
+            <!-- Chin soul patch -->
+            <ellipse cx="42" cy="37" rx="2.5" ry="1.8" fill="#6d452e" />
+
+            <!-- Messi's Styled Dark Brown Hair (parted with side bangs) -->
+            <path class="chibi-hair-main" d="M 21 24 C 21 10, 31 5, 42 5 C 53 5, 63 11, 63 24 C 63 19, 58 15, 52 16 C 47 11, 35 11, 30 16 C 26 17, 22 22, 21 24 Z" fill="#382218" />
+            <!-- Textured hair strands / bangs -->
+            <path d="M 28 14 C 33 8, 38 8, 44 9 C 38 12, 33 13, 28 14 Z" fill="#4d3023" />
+            <path d="M 44 9 C 50 8, 55 10, 58 14 C 53 12, 48 11, 44 9 Z" fill="#4d3023" />
+            <!-- Bouncy Hair Tuft on top -->
+            <path class="chibi-hair-tuft" d="M 41 5 C 44 0, 48 -1, 51 2 C 48 4, 46 5, 42 6 Z" fill="#382218" />
+
+            <!-- Big Kawaii Sparkling Eyes -->
+            <!-- Left Eye -->
+            <g class="chibi-eye-l">
+              <ellipse cx="33" cy="26" rx="4.2" ry="4.5" fill="#1b120c" />
+              <circle cx="31.8" cy="24.2" r="1.8" fill="#ffffff" />
+              <circle cx="34.8" cy="27.5" r="0.9" fill="#ffffff" />
+              <circle cx="32.5" cy="28.2" r="0.5" fill="#f5ba13" />
+            </g>
+
+            <!-- Right Eye -->
+            <g class="chibi-eye-r">
+              <ellipse cx="51" cy="26" rx="4.2" ry="4.5" fill="#1b120c" />
+              <circle cx="49.8" cy="24.2" r="1.8" fill="#ffffff" />
+              <circle cx="52.8" cy="27.5" r="0.9" fill="#ffffff" />
+              <circle cx="50.5" cy="28.2" r="0.5" fill="#f5ba13" />
+            </g>
+
+            <!-- Soft Eyebrows -->
+            <path d="M 29 19 Q 33 18 36 20" stroke="#382218" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <path d="M 48 20 Q 51 18 55 19" stroke="#382218" stroke-width="1.8" stroke-linecap="round" fill="none" />
+
+            <!-- Gentle Rosy Cheeks -->
+            <ellipse cx="27" cy="30" rx="4.2" ry="2.6" fill="#ff7096" opacity="0.5" />
+            <ellipse cx="57" cy="30" rx="4.2" ry="2.6" fill="#ff7096" opacity="0.5" />
+
+            <!-- Warm Happy Smile -->
+            <path d="M 38 32 Q 42 36 46 32" stroke="#4a2e1d" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <path d="M 39 33 Q 42 36 45 33 Z" fill="#ff80ab" />
+          </g>
+        </svg>
+
+        <!-- Kick Impact Star (flashes on kick contact) -->
+        <div class="kick-impact-burst">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M 12 0 L 14.5 8 L 22.5 8 L 16 13 L 18.5 21 L 12 16 L 5.5 21 L 8 13 L 1.5 8 L 9.5 8 Z" fill="#ffd700" opacity="0.95"/>
+          </svg>
+        </div>
+
+        <!-- Kicked Soccer Ball with spin & bounce -->
+        <div class="chibi-ball" id="chibiBall">
+          <svg viewBox="0 0 32 32" width="26" height="26">
+            <circle cx="16" cy="16" r="14.5" fill="#ffffff" stroke="#141418" stroke-width="1.6"/>
+            <!-- Soccer hexagons with sky blue & dark accents -->
+            <polygon points="16,10 21,14 19,19 13,19 11,14" fill="#75aadb"/>
+            <polygon points="16,1.5 18,6 14,6" fill="#141418"/>
+            <polygon points="29,10 26,14 28,18" fill="#141418"/>
+            <polygon points="23,28 20,24 25,23" fill="#141418"/>
+            <polygon points="9,28 12,24 7,23" fill="#141418"/>
+            <polygon points="3,10 6,14 4,18" fill="#141418"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- The Horizontal Loading Bar Track -->
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill" id="loadingBarFill" style="width: 0%">
+          <div class="loading-bar-glow"></div>
+        </div>
+        <!-- Goal Net at the end of the bar -->
+        <div class="loading-bar-goal" id="loadingGoalPost" title="Goal!">
+          <svg class="goal-net-svg" viewBox="0 0 36 28" width="26" height="22" fill="none">
+            <!-- Goal frame posts & crossbar -->
+            <path d="M 3 26 L 3 4 L 33 4 L 33 26" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 8 4 L 14 1 L 28 1 L 33 4" stroke="#e0e0e0" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M 14 1 L 14 26" stroke="#606068" stroke-width="1" stroke-dasharray="2,2"/>
+            <path d="M 28 1 L 28 26" stroke="#606068" stroke-width="1" stroke-dasharray="2,2"/>
+            <!-- Net netting mesh lines -->
+            <path d="M 3 10 L 33 10 M 3 16 L 33 16 M 3 22 L 33 22" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="2,2"/>
+            <path d="M 9 4 L 9 26 M 15 4 L 15 26 M 21 4 L 21 26 M 27 4 L 27 26" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="2,2"/>
+          </svg>
+          <span class="goal-shout-tag" id="goalShoutTag">GOAL!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Percentage counter & Dynamic step label (Clean, no emojis) -->
+    <div class="loading-meta-row">
+      <span class="loading-pct-counter" id="loadingPctCounter">0%</span>
+      <span class="loading-divider">·</span>
+      <span class="loading-status-text" id="loadingStatusText">Taking the pitch and loading match data...</span>
+    </div>
+    <div class="loading-sub">Analyzing 105 players across match form, valuations and sentiment</div>
+
+    <!-- Reduced motion fallback spinner -->
+    <div class="loading-reduced-spinner" aria-hidden="true"></div>
+  </div>
+</div>
+
+<!-- ═══ TOP NAV ════════════════════════════════════════════════════ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="brand">
+      <span class="brand-name">PlayerForm<span class="brand-orange">AI</span></span>
+    </div>
+    <div class="topnav-links">
+      <a class="topnav-link active" href="#" data-view="players" id="navPlayers">Players</a>
+      <a class="topnav-link" href="#" data-view="news" id="navNews">News</a>
+      <a class="topnav-link" href="#" data-view="rankings" id="navRankings">Rankings</a>
+      <a class="topnav-link" href="#" data-view="transfers" id="navTransfers">Transfers</a>
+    </div>
+    <div class="topnav-right">
+      <span class="synth-badge" id="topNavSynthBadge">⚠ SYNTHETIC DATA</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ VIEW 1: PLAYERS VIEW ══════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="viewPlayers" class="dashboard-view active">
+
+  <!-- ═══ COMBINED TOPBAR: TABS + SEARCH/FILTER ROW ══════════════ -->
+  <div class="topbar" id="topbar">
+    <!-- Row 1: Sport / Status Tabs -->
+    <div class="tab-row">
+      <div class="tab-row-inner">
+        <button class="sport-tab active" id="tabAll">All Players</button>
+        <button class="sport-tab" id="tabSlumps">Slumping</button>
+        <button class="sport-tab" id="tabOvervalued">Overvalued</button>
+        <button class="sport-tab" id="tabStable">Stable Form</button>
+        <button class="sport-tab tab-fav" id="tabFavorites">
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path d="M10 1l2.5 6.2H19l-5.4 4 2 6.2L10 13.7l-5.6 3.5 2-6.2L1 7.2h6.5z"/></svg>
+          Favorites
+          <span class="fav-count-badge" id="favCountBadge" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Search + Chips + Filter button -->
+    <div class="filter-row">
+      <div class="filter-row-inner">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="searchInput" type="text" placeholder="Search player or club…" autocomplete="off" />
+          <button class="search-clear" id="searchClear" style="display:none">✕</button>
+        </div>
+
+        <!-- Active filter chips -->
+        <div class="chip-list" id="chipList"></div>
+
+        <!-- Filter button -->
+        <button class="filter-btn" id="filterBtn" aria-expanded="false">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M5 10h10M8 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Filters
+          <span class="filter-count" id="filterCount"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FILTER PANEL (dropdown) ════════════════════════════════ -->
+  <div class="filter-panel" id="filterPanel" hidden>
+    <div class="fp-inner">
+      <div class="fp-section">
+        <div class="fp-label">POSITION</div>
+        <div class="fp-pills" id="fpPos">
+          <button class="fp-pill active" data-pos="ALL">All</button>
+          <button class="fp-pill" data-pos="FW">Forwards</button>
+          <button class="fp-pill" data-pos="MF">Midfielders</button>
+          <button class="fp-pill" data-pos="DF">Defenders</button>
+          <button class="fp-pill" data-pos="GK">Goalkeepers</button>
+        </div>
+      </div>
+
+      <div class="fp-section">
+        <div class="fp-label">LEAGUE</div>
+        <div class="fp-pills" id="fpLeague">
+          <button class="fp-pill active" data-league="ALL">All Leagues</button>
+        </div>
+      </div>
+
+      <div class="fp-section">
+        <div class="fp-label">SORT BY</div>
+        <div class="fp-pills" id="fpSort">
+          <button class="fp-pill active" data-sort="slump_probability">Slump Risk</button>
+          <button class="fp-pill" data-sort="overvaluation_score">Overvaluation</button>
+          <button class="fp-pill" data-sort="per90_score">Form Score</button>
+          <button class="fp-pill" data-sort="market_value">Market Value</button>
+          <button class="fp-pill" data-sort="name">Name A–Z</button>
+        </div>
+      </div>
+
+      <div class="fp-section fp-section-row">
+        <div class="fp-label">WEEK</div>
+        <select class="fp-week-select" id="weekSelect">
+          <option value="latest">Latest Week</option>
+        </select>
+      </div>
+
+      <div class="fp-actions">
+        <button class="fp-reset" id="fpReset">Clear all filters</button>
+        <button class="fp-close" id="fpClose">Done</button>
+      </div>
+    </div>
+  </div>
+  <div class="filter-backdrop" id="filterBackdrop"></div>
+
+  <!-- ═══ MAIN BODY (Players Table) ══════════════════════════════ -->
+  <div class="body-layout">
+    <main class="main-content">
+      <!-- Stats ticker -->
+      <div class="stats-ticker" id="statsTicker"></div>
+
+      <!-- Column headers -->
+      <div class="table-header">
+        <div class="col-star" title="Favorite">★</div>
+        <div class="col-status"></div>
+        <div class="col-player">PLAYER</div>
+        <div class="col-spark">FORM TREND</div>
+        <div class="col-score">FORM</div>
+        <div class="col-slump">SLUMP %</div>
+        <div class="col-mv">MARKET VALUE</div>
+        <div class="col-pred">PREDICTED</div>
+        <div class="col-delta">DELTA</div>
+        <div class="col-sent">SENTIMENT</div>
+      </div>
+
+      <!-- Player groups (league-grouped rows) -->
+      <div id="playerList"></div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ VIEW 2: NEWS VIEW (LiveScore-style news feed) ════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="viewNews" class="dashboard-view" style="display:none">
+
+  <!-- News Notice Bar -->
+  <div class="news-notice-bar">
+    <div class="news-notice-inner">
+      <div class="news-notice-left">
+        <span class="synth-badge">MODEL INTELLIGENCE</span>
+        <span class="news-notice-text">Auto-generated from ML performance and valuation signals</span>
+      </div>
+      <div class="news-notice-right">
+        <span class="news-notice-hint">Multimodal Signals: FBref per-90s · Transfermarkt valuation gap · Fan sentiment</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- News Toolbar: Search, Favorites Filter, League Filter -->
+  <div class="news-toolbar">
+    <div class="news-toolbar-inner">
+      <!-- News Search -->
+      <div class="news-search-wrap">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input id="newsSearchInput" type="text" placeholder="Search news, player, or club…" autocomplete="off" />
+        <button class="search-clear" id="newsSearchClear" style="display:none">✕</button>
+      </div>
+
+      <!-- Favorites toggle -->
+      <button class="news-fav-toggle" id="newsFavToggle" title="Filter news by favorited players">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M10 1l2.5 6.2H19l-5.4 4 2 6.2L10 13.7l-5.6 3.5 2-6.2L1 7.2h6.5z"/></svg>
+        <span>Starred Players</span>
+        <span class="news-fav-badge" id="newsFavBadge">0</span>
+      </button>
+
+      <!-- League Pills (NO EMOJIS) -->
+      <div class="news-league-pills" id="newsLeaguePills">
+        <button class="news-pill active" data-league="ALL">All Leagues</button>
+        <button class="news-pill" data-league="Premier League">Premier League</button>
+        <button class="news-pill" data-league="La Liga">La Liga</button>
+        <button class="news-pill" data-league="Serie A">Serie A</button>
+        <button class="news-pill" data-league="Bundesliga">Bundesliga</button>
+        <button class="news-pill" data-league="Ligue 1">Ligue 1</button>
+        <button class="news-pill" data-league="Saudi Pro League">Saudi Pro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter Row (NO EMOJIS) -->
+  <div class="news-category-bar">
+    <div class="news-category-inner">
+      <div class="news-category-pills" id="newsCategoryPills">
+        <button class="news-cat-pill active" data-cat="ALL">All Stories</button>
+        <button class="news-cat-pill" data-cat="slump">Slump Alerts</button>
+        <button class="news-cat-pill" data-cat="overvalued">Overvaluation</button>
+        <button class="news-cat-pill" data-cat="undervalued">Value Gems</button>
+        <button class="news-cat-pill" data-cat="form">Form Surges</button>
+        <button class="news-cat-pill" data-cat="sentiment">Fan Sentiment</button>
+      </div>
+      <div class="news-meta-count" id="newsMetaCount">Showing all stories</div>
+    </div>
+  </div>
+
+  <!-- Main News Layout -->
+  <div class="news-layout">
+    <div class="news-content-wrap">
+
+      <!-- FotMob-Style Hero Section (Featured + Trending) -->
+      <section class="fotmob-hero-section" id="featuredSection">
+        <div class="fotmob-hero-container" id="fotmobHeroContainer"></div>
+      </section>
+
+      <!-- Latest News Wire Section -->
+      <section class="news-section" id="feedSection">
+        <div class="news-section-header">
+          <div class="news-section-badge secondary">LATEST WIRE</div>
+          <div class="news-section-label">Chronological Intelligence Wire</div>
+        </div>
+        <div class="news-wire-grid" id="latestFeedList"></div>
+      </section>
+
+      <!-- Empty State -->
+      <div class="news-empty-state" id="newsEmptyState" style="display:none">
+        <div class="news-empty-icon" id="newsEmptyIcon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+        </div>
+        <h3 class="news-empty-title" id="newsEmptyTitle">No stories match your filters</h3>
+        <p class="news-empty-text" id="newsEmptyText">Try selecting "All Leagues" or "All Stories" to see the full intelligence wire.</p>
+        <button class="news-empty-action" id="newsEmptyAction">Reset News Filters</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DETAIL MODAL (shared for Players table and News feed) ═══ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="detailModal">
+    <div class="modal-topbar">
+      <div class="modal-title-row">
+        <button class="modal-star-btn" id="modalStarBtn" title="Toggle favorite">★</button>
+        <div class="modal-avatar-wrap" id="modalAvatarWrap">
+          <img class="modal-headshot" id="modalHeadshot" src="" alt="" />
+        </div>
+        <span class="modal-pos-tag" id="modalPosTag"></span>
+        <h2 class="modal-name" id="modalName"></h2>
+        <span class="modal-club" id="modalClub"></span>
+      </div>
+      <div class="modal-topbar-actions">
+        <button class="modal-jump-btn" id="modalJumpBtn" title="Jump to player row in table">View in Table →</button>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+    </div>
+
+    <div class="modal-kpi-bar" id="modalKPIBar"></div>
+
+    <div class="modal-charts">
+      <div class="modal-chart-block">
+        <div class="chart-label">Form Score (per-90)</div>
+        <canvas id="chartForm" height="120"></canvas>
+      </div>
+      <div class="modal-chart-block">
+        <div class="chart-label">Market vs Predicted (€M)</div>
+        <canvas id="chartValue" height="120"></canvas>
+      </div>
+      <div class="modal-chart-block">
+        <div class="chart-label">Sentiment Score</div>
+        <canvas id="chartSentiment" height="120"></canvas>
+      </div>
+      <div class="modal-chart-block">
+        <div class="chart-label">Slump Probability (%)</div>
+        <canvas id="chartSlump" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="modal-insights">
+      <div class="modal-insights-label">Feature Attribution & Signal Decomposition</div>
+      <div class="modal-insights-grid" id="insightGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

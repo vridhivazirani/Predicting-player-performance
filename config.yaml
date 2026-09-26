@@ -1,0 +1,45 @@
+# ============================================================
+# config.yaml — Project-wide thresholds and settings
+# ============================================================
+
+data:
+  performance_csv: "data/raw/match_performance.csv"
+  market_csv: "data/raw/market_valuations.csv"
+  sentiment_csv: "data/raw/social_sentiment.csv"
+  aligned_output: "data/processed/aligned_weekly.csv"
+
+features:
+  rolling_window: 5          # weeks for rolling form features
+  slump_zscore_threshold: -1.5  # z-score below which a player is flagged as slumping
+  slump_min_weeks: 3         # minimum consecutive flagged weeks to be a slump
+  decay_alpha: 0.85          # exponential decay factor for per-90 composite
+
+sentiment:
+  model_name: "cardiffnlp/twitter-roberta-base-sentiment"
+  batch_size: 32
+  max_length: 128
+  volume_window: 4           # weeks for mention-volume momentum
+
+modeling:
+  test_weeks: 10             # number of most-recent weeks held out for evaluation
+  random_seed: 42
+  xgb_n_estimators: 200
+  lgbm_n_estimators: 200
+  lstm_hidden_size: 64
+  lstm_num_layers: 2
+  lstm_dropout: 0.3
+  fusion_epochs: 30
+  fusion_batch_size: 32
+  fusion_lr: 0.001
+
+overvaluation:
+  baseline_model: "ridge"    # baseline for value regression: 'ridge' or 'xgb'
+  residual_clip: 50.0        # clip overvaluation score at ±50M €
+
+output:
+  results_json: "dashboard/results.json"
+  results_csv: "results/results.csv"
+  model_dir: "models/"
+
+dashboard:
+  port: 8000

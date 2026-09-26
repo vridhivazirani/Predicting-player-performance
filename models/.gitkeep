@@ -1,0 +1,3 @@
+# models/.gitkeep
+# Trained model artefacts (*.pkl, *.pt) are saved here by run_pipeline.py.
+# Large binaries excluded from version control via .gitignore.

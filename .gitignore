@@ -1,0 +1,30 @@
+# .gitignore
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Data (raw CSVs may be large / proprietary)
+data/raw/
+data/processed/
+
+# Model artefacts
+models/*.pkl
+models/*.pt
+models/*.bin
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
