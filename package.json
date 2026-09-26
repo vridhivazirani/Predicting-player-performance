@@ -1,0 +1,9 @@
+{
+  "name": "playerform-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PlayerForm AI - Slump & Transfer Intelligence Dashboard",
+  "scripts": {
+    "build": "echo 'Building PlayerForm AI Dashboard...'"
+  }
+}
