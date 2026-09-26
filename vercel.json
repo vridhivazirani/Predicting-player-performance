@@ -1,12 +1,4 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/", "destination": "/dashboard/index.html" },
-    { "source": "/style.css", "destination": "/dashboard/style.css" },
-    { "source": "/app.js", "destination": "/dashboard/app.js" },
-    { "source": "/results.json", "destination": "/dashboard/results.json" },
-    { "source": "/player_photos_map.json", "destination": "/dashboard/player_photos_map.json" },
-    { "source": "/images/(.*)", "destination": "/dashboard/images/$1" },
-    { "source": "/(.*)", "destination": "/dashboard/$1" }
-  ]
+  "outputDirectory": "dashboard",
+  "cleanUrls": true
 }
