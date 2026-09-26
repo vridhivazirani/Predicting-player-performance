@@ -81,7 +81,7 @@ flowchart TD
 ```
 Predicting-player-performance/
 ├── config.yaml                  # Global thresholds, hyperparams, and directory paths
-├── requirements.txt             # Python dependencies
+├── requirements-pipeline.txt    # Python dependencies for ML pipeline
 ├── run_pipeline.py              # Orchestration script (data -> features -> train -> export)
 │
 ├── dashboard/                   # Web Dashboard Application
@@ -128,7 +128,7 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements-pipeline.txt
 ```
 
 ### 2. Run the Machine Learning Pipeline
